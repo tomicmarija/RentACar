@@ -11,6 +11,10 @@ using System.Web.Http.Description;
 using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
+using System.Web;
+using System.IO;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace RentApp.Controllers
 {
@@ -29,8 +33,14 @@ namespace RentApp.Controllers
             return unitOfWork.Vehicles.GetAll();
         }
 
-        // GET: api/Vehicles/5
-        [ResponseType(typeof(Vehicle))]
+        public IEnumerable<Vehicle> GetServiceVehicles(int serviceId)
+        {
+            return unitOfWork.Vehicles.GetAll().Where(v => v.ServiceId == serviceId);
+        }
+
+
+        //GET: api/Vehicles/5
+       [ResponseType(typeof(Vehicle))]
         public IHttpActionResult GetVehicle(int id)
         {
             Vehicle vehicle = unitOfWork.Vehicles.Get(id);
@@ -80,8 +90,51 @@ namespace RentApp.Controllers
 
         // POST: api/Vehicles
         [ResponseType(typeof(Vehicle))]
-        public IHttpActionResult PostVehicle(Vehicle vehicle)
+        public async Task<IHttpActionResult> PostVehicle()
         {
+            Vehicle vehicle = new Vehicle();
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            string root = HttpContext.Current.Server.MapPath("~/Content/images/vehicles/");
+            var provider = new MultipartFormDataStreamProvider(root);
+
+            try
+            {
+                var f = HttpContext.Current.Request.Files[0];
+                FileInfo ff = new FileInfo(f.FileName);
+                var fileName = Guid.NewGuid() + ff.Extension;
+                var fullPath = root + fileName;
+
+                if (File.Exists(fullPath))
+                {
+                    fileName = Guid.NewGuid() + ff.Extension;
+                    fullPath = root + fileName;
+                }
+
+                var relativePath = "/Content/images/vehicles/";
+                f.SaveAs(fullPath);
+
+                if (HttpContext.Current.Request.Form.Count > 0)
+                {
+
+                    vehicle = JsonConvert.DeserializeObject<Vehicle>(HttpContext.Current.Request.Form[0]);
+                    vehicle.Picture = relativePath + fileName;
+                    vehicle.Enable = true;
+                }
+                else
+                {
+                    //formData se nije popunio!
+                }
+
+            }
+            catch (System.Exception e)
+            {
+                //
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -113,5 +166,6 @@ namespace RentApp.Controllers
         {
             return unitOfWork.Vehicles.Get(id) != null;
         }
+        
     }
 }

@@ -48,7 +48,7 @@ namespace RentApp
                 TokenEndpointPath = new PathString("/oauth/token"),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
                 Provider = new CustomOAuthProvider(),
-                //AccessTokenFormat = new CustomJwtFormat("http://localhost:51860") //TODO Kad promenis port, menjaj i ovde. ---> Premesteno u UnityConfig!
+                AccessTokenFormat = new CustomJwtFormat("http://localhost:51900") //TODO Kad promenis port, menjaj i ovde. ---> Premesteno u UnityConfig!
             };
 
             // OAuth 2.0 Bearer Access Token Generation
@@ -58,7 +58,7 @@ namespace RentApp
         private void ConfigureOAuthTokenConsumption(IAppBuilder app)
         {
 
-            var issuer = "http://localhost:51860";
+            var issuer = "http://localhost:51900";
             string audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
             byte[] audienceSecret = TextEncodings.Base64Url.Decode(ConfigurationManager.AppSettings["as:AudienceSecret"]);
 

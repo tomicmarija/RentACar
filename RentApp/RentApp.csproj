@@ -283,6 +283,14 @@
     <Compile Include="Migrations\201806051407138_newmig.Designer.cs">
       <DependentUpon>201806051407138_newmig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806111608306_NewMigration.cs" />
+    <Compile Include="Migrations\201806111608306_NewMigration.Designer.cs">
+      <DependentUpon>201806111608306_NewMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806181851279_migration2.cs" />
+    <Compile Include="Migrations\201806181851279_migration2.Designer.cs">
+      <DependentUpon>201806181851279_migration2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -385,6 +393,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -409,6 +418,12 @@
     <EmbeddedResource Include="Migrations\201806051407138_newmig.resx">
       <DependentUpon>201806051407138_newmig.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806111608306_NewMigration.resx">
+      <DependentUpon>201806111608306_NewMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806181851279_migration2.resx">
+      <DependentUpon>201806181851279_migration2.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -428,7 +443,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51680</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51860/</IISUrl>
+          <IISUrl>http://localhost:51900/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

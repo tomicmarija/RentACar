@@ -29,18 +29,26 @@ namespace RentApp.Controllers
             return unitOfWork.PriceLists.GetAll();
         }
 
-        // GET: api/PriceLists/5
-        [ResponseType(typeof(PriceList))]
-        public IHttpActionResult GetPriceList(int id)
+        public PriceList GetServicePriceList(int serviceId)
         {
-            PriceList priceList = unitOfWork.PriceLists.Get(id);
-            if (priceList == null)
-            {
-                return NotFound();
-            }
+            PriceList p = unitOfWork.PriceLists.GetAll().Where(pl => pl.ServiceId == serviceId && pl.StartDate <= DateTime.Now && pl.EndDate > DateTime.Now).FirstOrDefault();
+            p.PriceItems = unitOfWork.PriceItems.GetAll().Where(pi => pi.PriceListId == p.Id).ToList();
 
-            return Ok(priceList);
+            return p;
         }
+
+        // GET: api/PriceLists/5
+        //[ResponseType(typeof(PriceList))]
+        //public IHttpActionResult GetPriceList(int id)
+        //{
+        //    PriceList priceList = unitOfWork.PriceLists.Get(id);
+        //    if (priceList == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(priceList);
+        //}
 
         // PUT: api/PriceLists/5
         [ResponseType(typeof(void))]
@@ -82,6 +90,9 @@ namespace RentApp.Controllers
         [ResponseType(typeof(PriceList))]
         public IHttpActionResult PostPriceList(PriceList priceList)
         {
+            priceList.StartDate = DateTime.Now;
+            priceList.EndDate = priceList.StartDate.AddMonths(1);
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

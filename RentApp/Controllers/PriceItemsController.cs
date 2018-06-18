@@ -29,11 +29,18 @@ namespace RentApp.Controllers
             return unitOfWork.PriceItems.GetAll();
         }
 
-        // GET: api/PriceItems/5
+
+
+        //GET: api/PriceItems/5
         [ResponseType(typeof(PriceItem))]
         public IHttpActionResult GetPriceItem(int id)
         {
-            PriceItem priceItem = unitOfWork.PriceItems.Get(id);
+            //PriceItem priceItem = unitOfWork.PriceItems.Get(id);
+
+            Vehicle vehicle = unitOfWork.Vehicles.Get(id);
+            PriceList priceList = unitOfWork.PriceLists.GetAll().Where(pl => pl.StartDate <= DateTime.Now && pl.EndDate > DateTime.Now && pl.ServiceId == vehicle.ServiceId).FirstOrDefault();
+            PriceItem priceItem = unitOfWork.PriceItems.GetAll().Where(pi => pi.VehicleId == id && pi.PriceListId == priceList.Id).FirstOrDefault();
+
             if (priceItem == null)
             {
                 return NotFound();
@@ -82,6 +89,8 @@ namespace RentApp.Controllers
         [ResponseType(typeof(PriceItem))]
         public IHttpActionResult PostPriceItem(PriceItem priceItem)
         {
+           // priceItem.PriceListId = 2;
+            Double.Parse(priceItem.Price.ToString());
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

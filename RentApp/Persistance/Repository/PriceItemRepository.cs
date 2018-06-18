@@ -13,9 +13,15 @@ namespace RentApp.Persistance.Repository
         {
         }
 
+        public override IEnumerable<PriceItem> GetAll()
+        {
+            return RADBContext.PriceItems.Include(pi => pi.Vehicle).OrderBy(pi => pi.Id);
+        }
+
         public IEnumerable<PriceItem> GetAll(int pageIndex, int pageSize)
         {
-            return RADBContext.PriceItems.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            IQueryable<PriceItem> priceItems = RADBContext.PriceItems.Include(pi => pi.Vehicle).OrderBy( pi => pi.Id).Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            return priceItems.ToList();
         }
 
         protected RADBContext RADBContext { get { return context as RADBContext; } }

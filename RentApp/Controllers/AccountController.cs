@@ -25,7 +25,6 @@ namespace RentApp.Controllers
     public class AccountController : ApiController
     {
         private const string LocalLoginProvider = "Local";
-
         public AccountController()
         {
         }
@@ -318,7 +317,9 @@ namespace RentApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new RAIdentityUser() { UserName = model.Email, Email = model.Email };
+            AppUser newAppUser = new AppUser() { FullName = model.FirstName + " " + model.LastName, FirstName = model.FirstName, LastName = model.LastName, DateOfBirth = model.DateOfBirth, Approved = false };
+
+            var user = new RAIdentityUser() {UserName = model.UserName, Email = model.Email, AppUser = newAppUser};
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
@@ -326,6 +327,8 @@ namespace RentApp.Controllers
             {
                 return GetErrorResult(result);
             }
+
+            UserManager.AddToRole(user.Id, "AppUser");
 
             return Ok();
         }

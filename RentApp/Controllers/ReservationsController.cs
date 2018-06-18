@@ -17,6 +17,7 @@ namespace RentApp.Controllers
     public class ReservationsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
+        private RADBContext rb = new RADBContext();
 
         public ReservationsController(IUnitOfWork unitOfWork)
         {
@@ -79,9 +80,17 @@ namespace RentApp.Controllers
         }
 
         // POST: api/Reservations
+        [Authorize]
         [ResponseType(typeof(Reservation))]
         public IHttpActionResult PostReservation(Reservation reservation)
         {
+            var username = User.Identity.Name;
+            var user = rb.Users.FirstOrDefault(u => u.UserName == username);
+            var id = rb.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).AppUserId;
+
+
+            reservation.AppUserId = id;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

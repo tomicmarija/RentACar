@@ -11,6 +11,10 @@ using System.Web.Http.Description;
 using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
+using System.Web;
+using System.IO;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace RentApp.Controllers
 {
@@ -23,12 +27,19 @@ namespace RentApp.Controllers
             this.unitOfWork = unitOfWork;
         }
 
+
         // GET: api/Branches
         public IEnumerable<Branch> GetBranches()
         {
             return unitOfWork.Branches.GetAll();
         }
 
+
+        public IEnumerable<Branch> GetServiceBranches(int serviceId)
+        {
+            return unitOfWork.Branches.GetAll().Where(b => b.ServiceId == serviceId);
+        }
+        /*
         // GET: api/Branches/5
         [ResponseType(typeof(Branch))]
         public IHttpActionResult GetBranch(int id)
@@ -40,7 +51,7 @@ namespace RentApp.Controllers
             }
 
             return Ok(branch);
-        }
+        }*/
 
         // PUT: api/Branches/5
         [ResponseType(typeof(void))]
@@ -80,8 +91,52 @@ namespace RentApp.Controllers
 
         // POST: api/Branches
         [ResponseType(typeof(Branch))]
-        public IHttpActionResult PostBranch(Branch branch)
+        public async Task<IHttpActionResult> PostBranch()
         {
+            Branch branch = new Branch();
+
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            string root = HttpContext.Current.Server.MapPath("~/Content/images/branches/");
+            var provider = new MultipartFormDataStreamProvider(root);
+
+            try
+            {
+                var f = HttpContext.Current.Request.Files[0];
+                FileInfo ff = new FileInfo(f.FileName);
+                var fileName = Guid.NewGuid() + ff.Extension;
+                var fullPath = root + fileName;
+
+                if (File.Exists(fullPath))
+                {
+                    fileName = Guid.NewGuid() + ff.Extension;
+                    fullPath = root + fileName;
+                }
+
+                var relativePath = "/Content/images/branches/";
+                f.SaveAs(fullPath);
+
+                if (HttpContext.Current.Request.Form.Count > 0)
+                {
+
+                    branch = JsonConvert.DeserializeObject<Branch>(HttpContext.Current.Request.Form[0]);
+                    branch.Picture = relativePath + fileName;
+                    //vehicle.Enable = true;
+                }
+                else
+                {
+                    //formData se nije popunio!
+                }
+
+            }
+            catch (System.Exception e)
+            {
+                //
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

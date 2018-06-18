@@ -13,15 +13,15 @@ namespace RentApp.Models.Entities
 
         public string FullName { get; set; }
 
-        //[Required]
+        [Required]
         [StringLength(30)]
         public string FirstName { get; set; }
 
-      //  [Required]
+        [Required]
         [StringLength(30)]
         public string LastName { get; set; }
 
-       // [Required]
+        [Required]
         public DateTime DateOfBirth { get; set; }
 
 
