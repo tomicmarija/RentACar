@@ -291,10 +291,13 @@
     <Compile Include="Migrations\201806181851279_migration2.Designer.cs">
       <DependentUpon>201806181851279_migration2.cs</DependentUpon>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="Migrations\201806210956331_allMig.cs" />
     <Compile Include="Migrations\201806210956331_allMig.Designer.cs">
       <DependentUpon>201806210956331_allMig.cs</DependentUpon>
     </Compile>
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -430,9 +433,12 @@
     <EmbeddedResource Include="Migrations\201806181851279_migration2.resx">
       <DependentUpon>201806181851279_migration2.cs</DependentUpon>
     </EmbeddedResource>
+<<<<<<< HEAD
     <EmbeddedResource Include="Migrations\201806210956331_allMig.resx">
       <DependentUpon>201806210956331_allMig.cs</DependentUpon>
     </EmbeddedResource>
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -452,7 +458,11 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51680</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
+<<<<<<< HEAD
           <IISUrl>https://localhost:44375/</IISUrl>
+=======
+          <IISUrl>http://localhost:51900/</IISUrl>
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

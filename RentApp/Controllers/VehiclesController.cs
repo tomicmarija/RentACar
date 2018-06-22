@@ -15,7 +15,10 @@ using System.Web;
 using System.IO;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+<<<<<<< HEAD
 using System.Threading;
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
 
 namespace RentApp.Controllers
 {
@@ -40,6 +43,7 @@ namespace RentApp.Controllers
 
         public IEnumerable<Vehicle> GetServiceVehicles(int serviceId)
         {
+<<<<<<< HEAD
             mutex.WaitOne();
             IEnumerable<Vehicle> vehicles =  unitOfWork.Vehicles.GetAll().Where(v => v.ServiceId == serviceId);
             mutex.ReleaseMutex();
@@ -53,11 +57,18 @@ namespace RentApp.Controllers
             IEnumerable<Vehicle> v = unitOfWork.Vehicles.GetAll(pageIndex, pageSize);
             mutex.ReleaseMutex();
             return v;
+=======
+            return unitOfWork.Vehicles.GetAll().Where(v => v.ServiceId == serviceId);
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
         }
 
 
         //GET: api/Vehicles/5
+<<<<<<< HEAD
         [ResponseType(typeof(Vehicle))]
+=======
+       [ResponseType(typeof(Vehicle))]
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
         public IHttpActionResult GetVehicle(int id)
         {
             mutex.WaitOne();
@@ -109,7 +120,10 @@ namespace RentApp.Controllers
         [ResponseType(typeof(Vehicle))]
         public async Task<IHttpActionResult> PostVehicle()
         {
+<<<<<<< HEAD
             mutex.WaitOne();
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
             Vehicle vehicle = new Vehicle();
             if (!Request.Content.IsMimeMultipartContent())
             {

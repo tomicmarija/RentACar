@@ -18,9 +18,12 @@ using System.Web;
 using System.IO;
 using static System.Net.WebRequestMethods;
 using Newtonsoft.Json;
+<<<<<<< HEAD
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Threading;
 using RentApp.Services;
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
 
 namespace RentApp.Controllers
 {
@@ -28,7 +31,10 @@ namespace RentApp.Controllers
     {
         private readonly IUnitOfWork unitOfWork;
         private RADBContext rb = new RADBContext();
+<<<<<<< HEAD
         private Mutex mutex = new Mutex();
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
 
         public AppUsersController(IUnitOfWork unitOfWork)
         {
@@ -89,11 +95,17 @@ namespace RentApp.Controllers
         [ResponseType(typeof(AppUser))]
         public IHttpActionResult GetAppUser(int id)
         {
+<<<<<<< HEAD
             mutex.WaitOne();
             if (id == 0)
             {
                 id = rb.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).AppUserId;
             }
+=======
+            var username = User.Identity.Name;
+            var user = rb.Users.FirstOrDefault(u => u.UserName == username);
+            id = rb.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).AppUserId;
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
 
             AppUser appUser = unitOfWork.AppUsers.Get(id);
             if (appUser == null)
@@ -108,7 +120,12 @@ namespace RentApp.Controllers
         [ResponseType(typeof(AppUser))]
         public async Task<IHttpActionResult> PutAppUser()
         {
+<<<<<<< HEAD
             mutex.WaitOne();
+            AppUser appUser = new AppUser();
+
+            if (!Request.Content.IsMimeMultipartContent())
+=======
             AppUser appUser = new AppUser();
 
             if (!Request.Content.IsMimeMultipartContent())
@@ -151,6 +168,58 @@ namespace RentApp.Controllers
                 appUser = JsonConvert.DeserializeObject<AppUser>(HttpContext.Current.Request.Form[0]);
             }
 
+
+
+            if (!ModelState.IsValid)
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+<<<<<<< HEAD
+            string root = HttpContext.Current.Server.MapPath("~/Content/images/users/");
+            var provider = new MultipartFormDataStreamProvider(root);
+
+            try
+            {
+                var f = HttpContext.Current.Request.Files[0];
+                FileInfo ff = new FileInfo(f.FileName);
+                var fileName = Guid.NewGuid() + ff.Extension;
+                var fullPath = root + fileName;
+
+                if (System.IO.File.Exists(fullPath))
+                {
+                    fileName = Guid.NewGuid() + ff.Extension;
+                    fullPath = root + fileName;
+                }
+
+                var relativePath = "/Content/images/users/";
+                f.SaveAs(fullPath);
+
+                if (HttpContext.Current.Request.Form.Count > 0)
+                {
+                    appUser = JsonConvert.DeserializeObject<AppUser>(HttpContext.Current.Request.Form[0]);
+                    appUser.DocumentPhoto = relativePath + fileName;
+                }
+                else
+                {
+                    //ukoliko se form data nije popunilo
+                }
+=======
+
+
+            /*if (id != appUser.Id)
+            {
+                return BadRequest();
+            }*/
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
+
+            }
+            catch (System.Exception e)
+            {
+                appUser = JsonConvert.DeserializeObject<AppUser>(HttpContext.Current.Request.Form[0]);
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -181,7 +250,13 @@ namespace RentApp.Controllers
                 }
             }
 
+<<<<<<< HEAD
             mutex.ReleaseMutex();
+=======
+            //return CreatedAtRoute("DefaultApi", new { id = appUser.Id }, appUser);
+
+            //return StatusCode(HttpStatusCode.NoContent);
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
             return Ok(appUser);
         }
 

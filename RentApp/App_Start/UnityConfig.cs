@@ -64,7 +64,11 @@ namespace RentApp
             container.RegisterType<ITypeRepository, TypeRepository>();
             container.RegisterType<IVehicleRepository, VehicleRepository>();
             container.RegisterType<ApplicationUserManager>();
+<<<<<<< HEAD
             container.RegisterType<ISecureDataFormat<AuthenticationTicket>, CustomJwtFormat>(new InjectionConstructor("https://localhost:44375"));
+=======
+            container.RegisterType<ISecureDataFormat<AuthenticationTicket>, CustomJwtFormat>(new InjectionConstructor("http://localhost:51900"));
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
             container.RegisterType<IUserStore<RAIdentityUser>, UserStore<RAIdentityUser>>(
             new InjectionConstructor(typeof(DbContext)));
         }

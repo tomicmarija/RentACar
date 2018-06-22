@@ -35,6 +35,11 @@ namespace RentApp.Controllers
         [ResponseType(typeof(PriceItem))]
         public IHttpActionResult GetPriceItem(int id)
         {
+<<<<<<< HEAD
+=======
+            //PriceItem priceItem = unitOfWork.PriceItems.Get(id);
+
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
             Vehicle vehicle = unitOfWork.Vehicles.Get(id);
             PriceList priceList = unitOfWork.PriceLists.GetAll().Where(pl => pl.StartDate <= DateTime.Now && pl.EndDate > DateTime.Now && pl.ServiceId == vehicle.ServiceId).FirstOrDefault();
             PriceItem priceItem = unitOfWork.PriceItems.GetAll().Where(pi => pi.VehicleId == id && pi.PriceListId == priceList.Id).FirstOrDefault();

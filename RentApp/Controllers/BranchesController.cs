@@ -15,7 +15,10 @@ using System.Web;
 using System.IO;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+<<<<<<< HEAD
 using System.Threading;
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
 
 namespace RentApp.Controllers
 {
@@ -42,10 +45,14 @@ namespace RentApp.Controllers
 
         public IEnumerable<Branch> GetServiceBranches(int serviceId)
         {
+<<<<<<< HEAD
             mutex.WaitOne();
             IEnumerable<Branch> branches =  unitOfWork.Branches.GetAll().Where(b => b.ServiceId == serviceId);
             mutex.ReleaseMutex();
             return branches;
+=======
+            return unitOfWork.Branches.GetAll().Where(b => b.ServiceId == serviceId);
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
         }
         /*
         // GET: api/Branches/5
@@ -101,7 +108,10 @@ namespace RentApp.Controllers
         [ResponseType(typeof(Branch))]
         public async Task<IHttpActionResult> PostBranch()
         {
+<<<<<<< HEAD
             mutex.WaitOne();
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
             Branch branch = new Branch();
 
             if (!Request.Content.IsMimeMultipartContent())

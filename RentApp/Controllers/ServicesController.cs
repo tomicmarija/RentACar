@@ -17,8 +17,11 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Diagnostics;
 using Newtonsoft.Json;
+<<<<<<< HEAD
 using System.Threading;
 using RentApp.Services;
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
 
 namespace RentApp.Controllers
 {
@@ -33,6 +36,7 @@ namespace RentApp.Controllers
             this.unitOfWork = unitOfWork;
         }
 
+<<<<<<< HEAD
         [HttpGet]
         public IEnumerable<Service> GetServices()
         {
@@ -51,6 +55,13 @@ namespace RentApp.Controllers
             IEnumerable<Service> services = unitOfWork.Services.GetAll(pageIndex,pageSize).Where(service => service.Approved);
             mutex.ReleaseMutex();
             return services;
+=======
+        //GET: api/Services
+        [HttpGet]
+        public IEnumerable<Service> GetServices()
+        {//user.Identity.Name za role za menadzera dobijam njegov userName
+            return unitOfWork.Services.GetAll().Where(service => service.Approved);
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
         }
 
         // GET: api/Services/5
@@ -116,7 +127,10 @@ namespace RentApp.Controllers
         [ResponseType(typeof(Service))]
         public async Task<IHttpActionResult> PostService()
         {
+<<<<<<< HEAD
             mutex.WaitOne();
+=======
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
             Service service = new Service();
 
             if (!Request.Content.IsMimeMultipartContent())
@@ -133,6 +147,44 @@ namespace RentApp.Controllers
                 FileInfo ff = new FileInfo(f.FileName);
                 var fileName = Guid.NewGuid() + ff.Extension;
                 var fullPath = root + fileName;
+<<<<<<< HEAD
+=======
+
+                if (File.Exists(fullPath))
+                {
+                    fileName = Guid.NewGuid() + ff.Extension;
+                    fullPath = root + fileName;
+                }
+
+                var relativePath = "/Content/images/";
+                f.SaveAs(fullPath);
+
+                if (HttpContext.Current.Request.Form.Count > 0)
+                {
+
+                    service = JsonConvert.DeserializeObject<Service>(HttpContext.Current.Request.Form[0]);
+                    service.Logo = relativePath + fileName;
+                }else
+                {
+                    //formData se nije popunio!
+                }
+                
+            }
+            catch (System.Exception e)
+            {
+                //
+            }
+                service.UserManagerId = 3;
+                service.Approved = true;
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                unitOfWork.Services.Add(service);
+                unitOfWork.Complete();
+>>>>>>> dc24c4590cef0f34dea85dc7e96aaded3ee010ce
 
                 if (File.Exists(fullPath))
                 {
