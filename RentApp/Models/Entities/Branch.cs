@@ -19,10 +19,10 @@ namespace RentApp.Models.Entities
         public string Address { get; set; }
 
         [Required]
-        public int Latitude { get; set; }
+        public double Latitude { get; set; }
 
         [Required]
-        public int Longitude { get; set; }
+        public double Longitude { get; set; }
 
         public int ServiceId { get; set; }
         public Service Service { get; set; }

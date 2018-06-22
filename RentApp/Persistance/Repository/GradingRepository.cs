@@ -13,6 +13,11 @@ namespace RentApp.Persistance.Repository
         {
         }
 
+        public override IEnumerable<Grading> GetAll()
+        {
+            return RADBContext.Gradings.Include(g => g.AppUser);
+        }
+
         public IEnumerable<Grading> GetAll(int pageIndex, int pageSize)
         {
             return RADBContext.Gradings.Skip((pageIndex - 1) * pageSize).Take(pageSize);

@@ -11,12 +11,18 @@ using System.Web.Http.Description;
 using RentApp.Models.Entities;
 using RentApp.Persistance;
 using RentApp.Persistance.UnitOfWork;
+using System.Web;
+using System.IO;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace RentApp.Controllers
 {
     public class VehiclesController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
+        private Mutex mutex = new Mutex();
 
         public VehiclesController(IUnitOfWork unitOfWork)
         {
@@ -26,19 +32,41 @@ namespace RentApp.Controllers
         // GET: api/Vehicles
         public IEnumerable<Vehicle> GetVehicles()
         {
-            return unitOfWork.Vehicles.GetAll();
+            mutex.WaitOne();
+            IEnumerable<Vehicle> vehicles=  unitOfWork.Vehicles.GetAll();
+            mutex.ReleaseMutex();
+            return vehicles;
         }
 
-        // GET: api/Vehicles/5
+        public IEnumerable<Vehicle> GetServiceVehicles(int serviceId)
+        {
+            mutex.WaitOne();
+            IEnumerable<Vehicle> vehicles =  unitOfWork.Vehicles.GetAll().Where(v => v.ServiceId == serviceId);
+            mutex.ReleaseMutex();
+            return vehicles;
+        }
+
+        [HttpGet]
+        public IEnumerable<Vehicle> GetVehicles(int pageIndex, int pageSize)
+        {
+            mutex.WaitOne();
+            IEnumerable<Vehicle> v = unitOfWork.Vehicles.GetAll(pageIndex, pageSize);
+            mutex.ReleaseMutex();
+            return v;
+        }
+
+
+        //GET: api/Vehicles/5
         [ResponseType(typeof(Vehicle))]
         public IHttpActionResult GetVehicle(int id)
         {
+            mutex.WaitOne();
             Vehicle vehicle = unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
             {
                 return NotFound();
             }
-
+            mutex.ReleaseMutex();
             return Ok(vehicle);
         }
 
@@ -46,6 +74,7 @@ namespace RentApp.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutVehicle(int id, Vehicle vehicle)
         {
+            mutex.WaitOne();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -55,9 +84,6 @@ namespace RentApp.Controllers
             {
                 return BadRequest();
             }
-
-
-
             try
             {
                 unitOfWork.Vehicles.Update(vehicle);
@@ -74,14 +100,59 @@ namespace RentApp.Controllers
                     throw;
                 }
             }
-
+            mutex.ReleaseMutex();
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Vehicles
+        [Authorize(Roles = "Manager")]
         [ResponseType(typeof(Vehicle))]
-        public IHttpActionResult PostVehicle(Vehicle vehicle)
+        public async Task<IHttpActionResult> PostVehicle()
         {
+            mutex.WaitOne();
+            Vehicle vehicle = new Vehicle();
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            string root = HttpContext.Current.Server.MapPath("~/Content/images/vehicles/");
+            var provider = new MultipartFormDataStreamProvider(root);
+
+            try
+            {
+                var f = HttpContext.Current.Request.Files[0];
+                FileInfo ff = new FileInfo(f.FileName);
+                var fileName = Guid.NewGuid() + ff.Extension;
+                var fullPath = root + fileName;
+
+                if (File.Exists(fullPath))
+                {
+                    fileName = Guid.NewGuid() + ff.Extension;
+                    fullPath = root + fileName;
+                }
+
+                var relativePath = "/Content/images/vehicles/";
+                f.SaveAs(fullPath);
+
+                if (HttpContext.Current.Request.Form.Count > 0)
+                {
+
+                    vehicle = JsonConvert.DeserializeObject<Vehicle>(HttpContext.Current.Request.Form[0]);
+                    vehicle.Picture = relativePath + fileName;
+                    vehicle.Enable = true;
+                }
+                else
+                {
+                    //formData se nije popunio!
+                }
+
+            }
+            catch (System.Exception e)
+            {
+                //
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -89,7 +160,7 @@ namespace RentApp.Controllers
 
             unitOfWork.Vehicles.Add(vehicle);
             unitOfWork.Complete();
-
+            mutex.ReleaseMutex();
             return CreatedAtRoute("DefaultApi", new { id = vehicle.Id }, vehicle);
         }
 
@@ -97,6 +168,7 @@ namespace RentApp.Controllers
         [ResponseType(typeof(Vehicle))]
         public IHttpActionResult DeleteVehicle(int id)
         {
+            mutex.WaitOne();
             Vehicle vehicle = unitOfWork.Vehicles.Get(id);
             if (vehicle == null)
             {
@@ -105,13 +177,17 @@ namespace RentApp.Controllers
 
             unitOfWork.Vehicles.Remove(vehicle);
             unitOfWork.Complete();
-
+            mutex.ReleaseMutex();
             return Ok(vehicle);
         }
 
         private bool VehicleExists(int id)
         {
-            return unitOfWork.Vehicles.Get(id) != null;
+            mutex.WaitOne();
+            bool ret =  unitOfWork.Vehicles.Get(id) != null;
+            mutex.ReleaseMutex();
+            return ret;
         }
+        
     }
 }

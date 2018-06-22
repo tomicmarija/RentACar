@@ -17,6 +17,7 @@ namespace RentApp.Controllers
     public class GradingsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
+        private RADBContext rb = new RADBContext();
 
         public GradingsController(IUnitOfWork unitOfWork)
         {
@@ -29,18 +30,23 @@ namespace RentApp.Controllers
             return unitOfWork.Gradings.GetAll();
         }
 
-        // GET: api/Gradings/5
-        [ResponseType(typeof(Grading))]
-        public IHttpActionResult GetGrading(int id)
+        public IEnumerable<Grading> GetServiceGradings(int serviceId)
         {
-            Grading grading = unitOfWork.Gradings.Get(id);
-            if (grading == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(grading);
+            return unitOfWork.Gradings.GetAll().Where(g => g.ServiceId == serviceId);
         }
+
+        // GET: api/Gradings/5
+        //[ResponseType(typeof(Grading))]
+        //public IHttpActionResult GetGrading(int id)
+        //{
+        //    Grading grading = unitOfWork.Gradings.Get(id);
+        //    if (grading == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(grading);
+        //}
 
         // PUT: api/Gradings/5
         [ResponseType(typeof(void))]
@@ -79,18 +85,33 @@ namespace RentApp.Controllers
         }
 
         // POST: api/Gradings
+        [Authorize]
         [ResponseType(typeof(Grading))]
         public IHttpActionResult PostGrading(Grading grading)
         {
-            if (!ModelState.IsValid)
+            var username = User.Identity.Name;
+            var user = rb.Users.FirstOrDefault(u => u.UserName == username);
+            var id = rb.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).AppUserId;
+
+            if (unitOfWork.Reservations.GetAll().Where(r => r.AppUserId == id).FirstOrDefault() != null)
             {
-                return BadRequest(ModelState);
+
+                grading.AppUserId = id;
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                unitOfWork.Gradings.Add(grading);
+                unitOfWork.Complete();
+
+                return CreatedAtRoute("DefaultApi", new { id = grading.Id }, grading);
             }
-
-            unitOfWork.Gradings.Add(grading);
-            unitOfWork.Complete();
-
-            return CreatedAtRoute("DefaultApi", new { id = grading.Id }, grading);
+            else
+            {
+                return BadRequest("You are not approved to add comments!");
+            }
         }
 
         // DELETE: api/Gradings/5

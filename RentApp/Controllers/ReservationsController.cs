@@ -17,6 +17,7 @@ namespace RentApp.Controllers
     public class ReservationsController : ApiController
     {
         private readonly IUnitOfWork unitOfWork;
+        private RADBContext rb = new RADBContext();
 
         public ReservationsController(IUnitOfWork unitOfWork)
         {
@@ -24,23 +25,23 @@ namespace RentApp.Controllers
         }
 
         // GET: api/Reservations
-        public IEnumerable<Reservation> GetReservations()
+        public IEnumerable<Reservation> GetReservations(int vehicleId)
         {
-            return unitOfWork.Reservations.GetAll();
+            return unitOfWork.Reservations.GetAll().Where(r => r.VehicleId == vehicleId).OrderBy(r => r.StartDate).ToList();
         }
 
         // GET: api/Reservations/5
-        [ResponseType(typeof(Reservation))]
-        public IHttpActionResult GetReservation(int id)
-        {
-            Reservation reservation = unitOfWork.Reservations.Get(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
+        //[ResponseType(typeof(Reservation))]
+        //public IHttpActionResult GetReservation(int id)
+        //{
+        //    Reservation reservation = unitOfWork.Reservations.Get(id);
+        //    if (reservation == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(reservation);
-        }
+        //    return Ok(reservation);
+        //}
 
         // PUT: api/Reservations/5
         [ResponseType(typeof(void))]
@@ -79,9 +80,17 @@ namespace RentApp.Controllers
         }
 
         // POST: api/Reservations
+        [Authorize]
         [ResponseType(typeof(Reservation))]
         public IHttpActionResult PostReservation(Reservation reservation)
         {
+            var username = User.Identity.Name;
+            var user = rb.Users.FirstOrDefault(u => u.UserName == username);
+            var id = rb.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).AppUserId;
+
+
+            reservation.AppUserId = id;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
